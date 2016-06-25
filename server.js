@@ -5,6 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
 
@@ -56,5 +57,21 @@ app.use(function(err, req, res, next) {
   });
 });
 
+//Database configuration with Mongoose
+var databaseUri = 'mongodb://localhost/nytreact';
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+} else {
+  mongoose.connect(databaseUri);
+}
+
+var db = mongoose.connection;
+
+db.on('error', function(err) {
+    console.log('Mongoose Error: ', err);
+});
+db.once('open', function() {
+    console.log('Mongoose connection successful.');
+});
 
 module.exports = app;
